@@ -1,16 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from math import *
+import math
+import util as util
 
 
 def get_negative(im, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
+    height, width = im.shape
+    result = np.ndarray((height, width), dtype=np.uint8)
 
-    for i in range(im.shape[0]):
-        for j in range(im.shape[1]):
+    for i in range(height):
+        for j in range(width):
             result[i][j] = 255 - im[i][j]
 
     if plot:
@@ -20,16 +22,18 @@ def get_negative(im, plot):
 
 
 
-def get_brightness(im, c, plot):
+def get_brightness(im, c, plot):        # problema quando 0 < c < 1
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
+    height, width = im.shape
+    result = np.ndarray((height, width), dtype=np.uint8)
 
-    for i in range(im.shape[0]):
-        for j in range(im.shape[1]):
-            aux = (c * im[i][j])
-            print(aux)
+    for i in range(height):
+        for j in range(width):
+            # print(im[i][j])
+            aux = int(c * im[i][j])
+            # print(aux)
             if aux > 255: aux = 255
             result[i][j] = aux
 
@@ -40,16 +44,17 @@ def get_brightness(im, c, plot):
 
 
 
-def get_logarithm(im, c, plot):
+def get_logarithm(im, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
+    height, width = im.shape
+    result = np.ndarray((height, width), dtype=np.uint8)
 
-
-    for i in range(im.shape[0]):
-        for j in range(im.shape[1]):
-            result[i][j] = c * log(1 + im[i][j])
+    for i in range(height):
+        for j in range(width):
+            aux = im[i][j] / 255
+            result[i][j] = 255 * math.log((1 + aux), 2)
 
     if plot:
         plt.imshow(result, cmap='gray')
@@ -62,10 +67,11 @@ def get_gamma(im, c, g, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
+    height, width = im.shape
+    result = np.ndarray((height, width), dtype=np.uint8)
 
-    for i in range(im.shape[0]):
-        for j in range(im.shape[1]):
+    for i in range(height):
+        for j in range(width):
             # pixel = c * (im[i][j] ** g)
             result[i][j] = (255 / (256 ** g)) * ((1 + im[i][j]) ** g)
 
@@ -80,7 +86,8 @@ def get_piecewise(im, point1, point2, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
+    height, width = im.shape
+    result = np.ndarray((height, width), dtype=np.uint8)
 
     aux = np.array(range(0, 256), dtype=np.uint8)
     xp = [point1[0], point2[0]]
@@ -91,8 +98,8 @@ def get_piecewise(im, point1, point2, plot):
     else:
         print('x-coordinates of points must be in increasing order')
 
-    for i in range(im.shape[0]):
-        for j in range(im.shape[1]):
+    for i in range(height):
+        for j in range(width):
             result[i][j] = np.uint8(aux[im[i][j]])
 
     if plot:
@@ -106,10 +113,11 @@ def get_thresholding(im, c, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.zeros((im.shape[0], im.shape[1]), dtype=np.uint8)
+    height, width = im.shape
+    result = np.ndarray((height, width), dtype=np.uint8)
 
-    for i in range(im.shape[0]):
-        for j in range(im.shape[1]):
+    for i in range(height):
+        for j in range(width):
             if im[i][j] >= c:
                 result[i][j] = 255
             else:
@@ -127,10 +135,12 @@ def get_layers(im):     # retorna uma lista com 8 arrays, cada um contendo uma p
     # ex: layers[0] contém o bit mais significativo de cada pixel
     if isinstance(im, dict):
         im = im.get('im_obj')
-    layers = [np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8) for i in range(8)]
 
-    for i in range(im.shape[0]):
-        for j in range(im.shape[1]):
+    height, width = im.shape
+    layers = [np.ndarray((height, width), dtype=np.uint8) for i in range(8)]
+
+    for i in range(height):
+        for j in range(width):
             byte_str = np.binary_repr(im[i][j], 8)
             for k in range(8):
                 layers[k][i][j] = int(byte_str[k])
@@ -142,10 +152,12 @@ def bit_slicing_c(im, layer, plot):       # deixa apenas 1 bit em cada byte
     # ex: layers[0] mantém o bit menos significativo de cada pixel, os outros recebem 0
     if isinstance(im, dict):
         im = im.get('im_obj')
-    layers = [np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8) for i in range(8)]
 
-    for i in range(im.shape[0]):
-        for j in range(im.shape[1]):
+    height, width = im.shape
+    layers = [np.ndarray((height, width), dtype=np.uint8) for i in range(8)]
+
+    for i in range(height):
+        for j in range(width):
             byte_str = np.binary_repr(im[i][j], 8)
             layers[0][i][j] = np.uint8(int('0000000' + byte_str[7], 2))
             layers[1][i][j] = np.uint8(int('000000' + byte_str[6] + '0', 2))
@@ -167,10 +179,12 @@ def bit_slicing_d(im, layer, plot):    # remove apenas 1 bit em cada byte
     # ex: layers[0] muda o bit menos significativo para 0
     if isinstance(im, dict):
         im = im.get('im_obj')
-    layers = [np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8) for i in range(8)]
 
-    for i in range(im.shape[0]):
-        for j in range(im.shape[1]):
+    height, width = im.shape
+    layers = [np.ndarray((height, width), dtype=np.uint8) for i in range(8)]
+
+    for i in range(height):
+        for j in range(width):
             byte_str = np.binary_repr(im[i][j], 8)
             layers[0][i][j] = np.uint8(int(byte_str[:6] + '0', 2))
             layers[1][i][j] = np.uint8(int(byte_str[:5] + '0' + byte_str[7], 2))

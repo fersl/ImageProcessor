@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.stats as sp
 import matplotlib.pyplot as plt
 from math import *
 
@@ -11,8 +12,7 @@ def neighbours(im, size, i, j):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    height = im.shape[0]
-    width = im.shape[1]
+    height, width = im.shape
     mask = np.zeros((size, size), np.uint8)
     mask_limit = size // 2
 
@@ -28,8 +28,7 @@ def get_neighbours_3(im, i, j):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    height = im.shape[0]
-    width = im.shape[1]
+    height, width = im.shape
     mask = np.zeros((3, 3), np.uint8)
 
     mask[1][1] = im[i][j]
@@ -54,13 +53,23 @@ def get_neighbours_3(im, i, j):
 
 
 
+def calculate_counter_harmonic(mask):
+    sum_sqr = 0
+    sum = 0
+    for i in range(3):
+        for j in range(3):
+            sum += mask[i][j]
+            sum_sqr += (mask[i][j]) ** 2
+    return (sum_sqr / 9) // (sum / 9)
+
+
+
 def get_average (im, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), np.uint8)
-    height = im.shape[0]
-    width = im.shape[1]
+    height, width = im.shape
+    result = np.ndarray((height, width), np.uint8)
 
     for i in range(height):
         for j in range(width):
@@ -78,9 +87,8 @@ def get_convolution (im, weight_matrix, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
-    height = im.shape[0]
-    width = im.shape[1]
+    height, width = im.shape
+    result = np.ndarray((height, width), np.uint8)
 
     for i in range(height):
         for j in range(width):
@@ -107,9 +115,8 @@ def get_weighted_average (im, weight_matrix, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
-    height = im.shape[0]
-    width = im.shape[1]
+    height, width = im.shape
+    result = np.ndarray((height, width), np.uint8)
 
     for i in range(height):
         for j in range(width):
@@ -135,9 +142,8 @@ def get_median (im, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
-    height = im.shape[0]
-    width = im.shape[1]
+    height, width = im.shape
+    result = np.ndarray((height, width), np.uint8)
 
     for i in range(height):
         for j in range(width):
@@ -155,14 +161,13 @@ def get_min(im, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
-    height = im.shape[0]
-    width = im.shape[1]
+    height, width = im.shape
+    result = np.ndarray((height, width), np.uint8)
 
     for i in range(height):
         for j in range(width):
             mask = get_neighbours_3(im, i, j)
-            # result[i][j] =
+            result[i][j] = np.amin(mask)
 
     if plot:
         plt.imshow(result, cmap='gray')
@@ -175,9 +180,8 @@ def get_max(im, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
-    height = im.shape[0]
-    width = im.shape[1]
+    height, width = im.shape
+    result = np.ndarray((height, width), np.uint8)
 
     for i in range(height):
         for j in range(width):
@@ -195,9 +199,8 @@ def get_midpoint(im, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
-    height = im.shape[0]
-    width = im.shape[1]
+    height, width = im.shape
+    result = np.ndarray((height, width), np.uint8)
 
     for i in range(height):
         for j in range(width):
@@ -215,23 +218,13 @@ def get_geometric_mean(im, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
-    height = im.shape[0]
-    width = im.shape[1]
+    height, width = im.shape
+    result = np.ndarray((height, width), np.uint8)
 
     for i in range(height):
         for j in range(width):
             mask = get_neighbours_3(im, i, j)
-            aux = ( mask[0][0] *
-                    mask[0][1] *
-                    mask[0][2] *
-                    mask[1][0] *
-                    mask[1][1] *
-                    mask[1][2] *
-                    mask[2][0] *
-                    mask[2][1] *
-                    mask[2][2] )
-            result[i][j] = aux ** (1/9)
+            result[i][j] = sp.mstats.gmean(mask, axis=None)
 
     if plot:
         plt.imshow(result, cmap='gray')
@@ -244,23 +237,13 @@ def get_harmonic_mean(im, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
-    height = im.shape[0]
-    width = im.shape[1]
+    height, width = im.shape
+    result = np.ndarray((height, width), np.uint8)
 
     for i in range(height):
         for j in range(width):
             mask = get_neighbours_3(im, i, j)
-            aux = ( mask[0][0] *
-                    mask[0][1] *
-                    mask[0][2] *
-                    mask[1][0] *
-                    mask[1][1] *
-                    mask[1][2] *
-                    mask[2][0] *
-                    mask[2][1] *
-                    mask[2][2] )
-            result[i][j] = aux ** (1/9)
+            result[i][j] = sp.hmean(mask, axis=None)
 
     if plot:
         plt.imshow(result, cmap='gray')
@@ -269,27 +252,26 @@ def get_harmonic_mean(im, plot):
 
 
 
-def get_counterharmonic_mean(im, plot):
+def get_counterharmonic_mean(im, q, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
-    height = im.shape[0]
-    width = im.shape[1]
+    height, width = im.shape
+    result = np.ndarray((height, width), np.uint8)
 
     for i in range(height):
         for j in range(width):
             mask = get_neighbours_3(im, i, j)
-            aux = ( mask[0][0] *
-                    mask[0][1] *
-                    mask[0][2] *
-                    mask[1][0] *
-                    mask[1][1] *
-                    mask[1][2] *
-                    mask[2][0] *
-                    mask[2][1] *
-                    mask[2][2] )
-            result[i][j] = aux ** (1/9)
+
+            num = 0
+            den = 0
+            for pixel in np.nditer(mask):
+                # print(pixel)
+                den += int((pixel ** q))
+                num += int((pixel ** (q+1)))
+
+            try: result[i][j] = num // den
+            except: result[i][j] = 0
 
     if plot:
         plt.imshow(result, cmap='gray')
@@ -302,22 +284,21 @@ def get_laplacian (im, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
-    height = im.shape[0]
-    width = im.shape[1]
+    height, width = im.shape
+    result = np.ndarray((height, width), np.uint8)
 
     for i in range(height):
         for j in range(width):
             mask = get_neighbours_3(im, i, j)
-            result[i][j] = mask[0][0] * (-1) +\
-                           mask[0][1] * (-1) +\
-                           mask[0][2] * (-1) +\
-                           mask[1][0] * (-1) +\
-                           mask[1][1] * 8 +\
-                           mask[1][2] * (-1) +\
-                           mask[2][0] * (-1) +\
-                           mask[2][1] * (-1) +\
-                           mask[2][2] + (-1)
+            result[i][j] = (mask[0][0] * (-1)) +\
+                           (mask[0][1] * (-1)) +\
+                           (mask[0][2] * (-1)) +\
+                           (mask[1][0] * (-1)) +\
+                           (mask[1][1] * 8) +\
+                           (mask[1][2] * (-1)) +\
+                           (mask[2][0] * (-1)) +\
+                           (mask[2][1] * (-1)) +\
+                           (mask[2][2] + (-1))
 
     if plot:
         plt.imshow(result, cmap='gray')
@@ -330,9 +311,8 @@ def apply_laplacian(im, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
-    height = im.shape[0]
-    width = im.shape[1]
+    height, width = im.shape
+    result = np.ndarray((height, width), np.uint8)
     laplacian = get_laplacian(im, 0)
 
     for i in range(height):
@@ -351,9 +331,8 @@ def apply_highboost(im, c, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
-    height = im.shape[0]
-    width = im.shape[1]
+    height, width = im.shape
+    result = np.ndarray((height, width), np.uint8)
 
     for i in range(height):
         for j in range(width):
@@ -372,9 +351,8 @@ def get_sobel(im, plot):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
-    result = np.ndarray((im.shape[0], im.shape[1]), dtype=np.uint8)
-    height = im.shape[0]
-    width = im.shape[1]
+    height, width = im.shape
+    result = np.ndarray((height, width), np.uint8)
 
     for i in range(height):
         for j in range(width):

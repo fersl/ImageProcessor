@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import filters.color_conversion as cconv
 
 def show_histogram(im):
     if isinstance(im, dict):
@@ -11,18 +12,12 @@ def show_histogram(im):
 
 
 
-def get_histogram(im, plot):
+def get_histogram(im):
     if isinstance(im, dict): im = im.get('im_obj')
     hist = np.zeros(256)
-    bins = np.arange(256)
 
     for pixel in np.nditer(im):
         hist[pixel] += 1
-
-    if plot:
-        plt.figure()
-        plt.bar(bins, hist)
-        plt.show()
     return hist
 
 
@@ -33,19 +28,18 @@ def normalize_histogram(hist):      # hist é um array[256]
 
     for i in range(256):
         result[i] = hist[i] / total
-
     return result
 
 
 
-def eq_histogram(im, plot):   #testar
+def eq_histogram(im, plot):
     if isinstance(im, dict): im = im.get('im_obj')
     height, width = im.shape
     result_im = np.ndarray((height, width), np.uint8)
     eq_hist = np.zeros(256)
     bins = np.arange(256)
 
-    hist = get_histogram(im, 0)
+    hist = get_histogram(im)
     cdf = np.cumsum(hist)
 
     for k in range(256):
@@ -55,7 +49,7 @@ def eq_histogram(im, plot):   #testar
         for j in range(width):
             original_intensity = im[i][j]
             result_im[i][j] = eq_hist[original_intensity]
-    new_hist = get_histogram(result_im, 0)
+    new_hist = get_histogram(result_im)
 
     if plot:
         f, axarr = plt.subplots(2, 2)
@@ -127,6 +121,10 @@ def normalize_histogram_rgb(hists):     # hists é um array[3], com os 3 histogr
 
 
 #
-# def eq_histogram_rgb(im):
-#     if isinstance(im, dict): im = im.get('im_obj')
+def eq_histogram_rgb(im):
+    if isinstance(im, dict): im = im.get('im_obj')
 # converter cada pixel rgb para hsi e aplicar equalização na intensidade
+    height, width, channels = im.shape
+    hsi_im = np.ndarray((height, width, channels), np.uint8)
+    result_im = np.ndarray((height, width, channels), np.uint8)
+

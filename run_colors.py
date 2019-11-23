@@ -2,43 +2,50 @@ from filters.intensity_filters_color import *
 from filters.chroma_key import *
 import imageio
 import util as util
+import matplotlib.pyplot as plt
 from PIL import Image
 
 ##########   INTENSITY FILTERS   ##########
 
 def run_negative_color():
     im = imageio.imread('images/images_rgb/lenna_RGB.tif')
-    result = get_negative_rgb(im, 0)
+    result = get_negative_rgb(im)
     util.compare_rgb(im, result)
 
 
 def run_brightness_color(const):
     im = imageio.imread('images/images_rgb/lenna_RGB.tif')
-    result = get_brightness_rgb(im, const, 0)
+    result = get_brightness_rgb(im, const)
     util.compare_rgb(im, result)
 
 
 def run_log_color():
     im = imageio.imread('images/images_rgb/strawberries_fullcolor.tif')
-    result = get_logarithm_rgb(im, 0)
+    result = get_logarithm_rgb(im)
     util.compare_rgb(im, result)
 
 
 def run_gamma_color(const):
     im = imageio.imread('images/images_rgb/strawberries_fullcolor.tif')
-    result = get_gamma_rgb(im, const, 0)
+    result = get_gamma_rgb(im, const)
     util.compare_rgb(im, result)
 
 
 def run_tsh_color(const):
     im = imageio.imread('images/images_rgb/strawberries_fullcolor.tif')
-    result = get_thresholding_rgb(im, const, 0)
+    result = get_thresholding_rgb(im, const)
     util.compare_rgb(im, result)
 
 
 def run_sepia():
     im = imageio.imread('images/images_rgb/lenna_RGB.tif')
-    result = get_sepia(im, 0)
+    result = get_sepia(im)
+    util.compare_rgb(im, result)
+
+
+def run_grayscale():
+    im = imageio.imread('images/images_rgb/lenna_RGB.tif')
+    result = get_grayscale(im)
     util.compare_rgb(im, result)
 
 

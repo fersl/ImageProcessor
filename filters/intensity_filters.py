@@ -1,10 +1,8 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import math
-import util as util
 
 
-def get_negative(im, plot):
+def get_negative(im):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -14,15 +12,11 @@ def get_negative(im, plot):
     for i in range(height):
         for j in range(width):
             result[i][j] = 255 - im[i][j]
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def get_brightness(im, c, plot):        # problema quando 0 < c < 1
+def get_brightness(im, c):        # problema quando 0 < c < 1
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -36,15 +30,11 @@ def get_brightness(im, c, plot):        # problema quando 0 < c < 1
             # print(aux)
             if aux > 255: aux = 255
             result[i][j] = aux
-
-    if plot:
-        plt.imshow(im, cmap='gray')
-        plt.show()
     return result
 
 
 
-def get_logarithm(im, plot):
+def get_logarithm(im):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -55,15 +45,11 @@ def get_logarithm(im, plot):
         for j in range(width):
             aux = im[i][j] / 255
             result[i][j] = 255 * math.log((1 + aux), 2)
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def get_gamma(im, c, g, plot):
+def get_gamma(im, c, g):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -74,15 +60,11 @@ def get_gamma(im, c, g, plot):
         for j in range(width):
             # pixel = c * (im[i][j] ** g)
             result[i][j] = (255 / (256 ** g)) * ((1 + im[i][j]) ** g)
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def get_piecewise(im, point1, point2, plot):
+def get_piecewise(im, point1, point2):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -101,15 +83,11 @@ def get_piecewise(im, point1, point2, plot):
     for i in range(height):
         for j in range(width):
             result[i][j] = np.uint8(aux[im[i][j]])
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def get_thresholding(im, c, plot):
+def get_thresholding(im, c):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -122,10 +100,6 @@ def get_thresholding(im, c, plot):
                 result[i][j] = 255
             else:
                 result[i][j] = 0
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
@@ -148,7 +122,7 @@ def get_layers(im):     # retorna uma lista com 8 arrays, cada um contendo uma p
 
 
 
-def bit_slicing_c(im, layer, plot):       # deixa apenas 1 bit em cada byte
+def bit_slicing_c(im, layer):       # deixa apenas 1 bit em cada byte
     # ex: layers[0] mantém o bit menos significativo de cada pixel, os outros recebem 0
     if isinstance(im, dict):
         im = im.get('im_obj')
@@ -167,15 +141,11 @@ def bit_slicing_c(im, layer, plot):       # deixa apenas 1 bit em cada byte
             layers[5][i][j] = np.uint8(int('00' + byte_str[2] + '00000', 2))
             layers[6][i][j] = np.uint8(int('0' + byte_str[1] + '000000', 2))
             layers[7][i][j] = np.uint8(int(byte_str[0] + '0000000', 2))
-
-    if plot:
-        plt.imshow(layers[layer], cmap='gray')
-        plt.show()
     return layers
 
 
 
-def bit_slicing_d(im, layer, plot):    # remove apenas 1 bit em cada byte
+def bit_slicing_d(im, layer):    # remove apenas 1 bit em cada byte
     # ex: layers[0] muda o bit menos significativo para 0
     if isinstance(im, dict):
         im = im.get('im_obj')
@@ -194,8 +164,4 @@ def bit_slicing_d(im, layer, plot):    # remove apenas 1 bit em cada byte
             layers[5][i][j] = np.uint8(int(byte_str[:1] + '0' + byte_str[3:7], 2))
             layers[6][i][j] = np.uint8(int(byte_str[0] + '0' + byte_str[2:7], 2))
             layers[7][i][j] = np.uint8(int('0' + byte_str[1:7], 2))
-
-    if plot:
-        plt.imshow(layers[layer], cmap='gray')
-        plt.show()
     return layers

@@ -1,5 +1,6 @@
 import imageio
 import os
+import cmath
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -38,7 +39,7 @@ def normalize(im):
     for i in range(height):
         for j in range(width):
             result[i][j] = im[i][j] / 255
-            print(result[i][j])
+            # print(result[i][j])
     return result
 
 
@@ -93,3 +94,14 @@ def im_subtraction_rgb(im1, im2, plot):
         plt.imshow(result)
         plt.show()
     return result
+
+def to_polar(im):
+    height, width = im.shape
+    result = np.ndarray((height, width), np.uint8)
+
+    for i in range(height):
+        for j in range(width):
+            print(cmath.polar(im[i][j]))
+            # result[i][j] = cmath.polar(im[i][j])
+
+    # return result

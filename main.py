@@ -1,9 +1,15 @@
 import numpy as np
-from grayscale_functions import *
-from color_functions import *
+from run_grayscale import *
+from run_colors import *
 import util as util
+import matplotlib.pyplot as plt
 import filters.histogram_functions as hf
+import compression.lzw as lzw
+import compression.run_length as rl
 from filters.color_conversion import *
+from filters.frequency_filters import *
+from PIL import Image
+
 
 ##### CONSTANTS #####
 point_1 = [130, 60]
@@ -26,43 +32,17 @@ def list_img(list):
 if __name__ == '__main__':
     # im_list = util.load_images()
     # im_list_rgb = util.load_images_rgb()
-    # list_img(im_list_rgb)
 
-# Grayscale Intensity Functions:
-#     run_negative()
-#     run_brightness(2)
-#     run_log()
-#     run_gamma(1, 0.3)
-#     run_piecewise(point_1, point_2)
-#     run_tsh()   #need const
-#     run_bitslice_c()    #layer
-#     run_bitslice_d()    #layer
+    im = Image.open('images/compression/benchmark.bmp')
+    im = np.array(im)
+    # print(p.shape)
 
-# Grayscale Spatial Functions:
-#     run_average()
-#     run_median()
-#     run_min()
-#     run_max()
-#     run_midpoint()
-#     run_wmean(matrix_wmean)
-#     run_gmean()
-#     run_hmean()
-#     run_chmean()    #const
-#     run_convolution(matrix_conv)
-#     run_laplacian()
-#     run_sobel()
-#     run_highboost() #const
 
-# Color Intensity Functions:
-#     color_conversion(insys, outsys, a, b, c)
-#     run_negative_color()
-#     run_brightness_color(2)  #const
-#     run_log_color()
-    # run_gamma_color()   #const
-    # run_tsh_color()     #const
-    # run_sepia()
-    # run_chroma()
-
+    # rl.compress_rl(im)
+    rl.decompress_rl('benchmark.bin')
+    # lzw.compress_lzw(im)
+    # lzw.decompress_lzw('teste.bmp')
+    # lzw.bin2dec('1001111110000000100')
 
 
 

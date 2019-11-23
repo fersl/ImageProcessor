@@ -1,6 +1,5 @@
 import numpy as np
 import scipy.stats as sp
-import matplotlib.pyplot as plt
 from math import *
 
 # def gaussian(x, y, sigma):
@@ -64,7 +63,7 @@ def calculate_counter_harmonic(mask):
 
 
 
-def get_average (im, plot):
+def get_average (im):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -75,15 +74,11 @@ def get_average (im, plot):
         for j in range(width):
             mask = get_neighbours_3(im, i, j)
             result[i][j] = floor(np.mean(mask))
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def get_convolution (im, weight_matrix, plot):
+def get_convolution (im, weight_matrix):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -103,15 +98,11 @@ def get_convolution (im, weight_matrix, plot):
                             mask[2][1] * weight_matrix[0][1] +  # bottom
                             mask[2][2] * weight_matrix[0][0]    # bottom right
                             ) // 9
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def get_weighted_average (im, weight_matrix, plot):
+def get_weighted_average (im, weight_matrix):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -130,15 +121,11 @@ def get_weighted_average (im, weight_matrix, plot):
                             mask[2][0] * weight_matrix[2][0] +
                             mask[2][1] * weight_matrix[2][1] +
                             mask[2][2] * weight_matrix[2][2]) // 9
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def get_median (im, plot):
+def get_median (im):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -149,15 +136,11 @@ def get_median (im, plot):
         for j in range(width):
             mask = get_neighbours_3(im, i, j)
             result[i][j] = np.median(mask)
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def get_min(im, plot):
+def get_min(im):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -168,15 +151,11 @@ def get_min(im, plot):
         for j in range(width):
             mask = get_neighbours_3(im, i, j)
             result[i][j] = np.amin(mask)
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def get_max(im, plot):
+def get_max(im):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -187,15 +166,11 @@ def get_max(im, plot):
         for j in range(width):
             mask = get_neighbours_3(im, i, j)
             result[i][j] = np.amax(mask)
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def get_midpoint(im, plot):
+def get_midpoint(im):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -206,15 +181,11 @@ def get_midpoint(im, plot):
         for j in range(width):
             mask = get_neighbours_3(im, i, j)
             result[i][j] = (np.amax(mask) + np.amin(mask)) // 2
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def get_geometric_mean(im, plot):
+def get_geometric_mean(im):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -225,15 +196,11 @@ def get_geometric_mean(im, plot):
         for j in range(width):
             mask = get_neighbours_3(im, i, j)
             result[i][j] = sp.mstats.gmean(mask, axis=None)
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def get_harmonic_mean(im, plot):
+def get_harmonic_mean(im):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -244,15 +211,11 @@ def get_harmonic_mean(im, plot):
         for j in range(width):
             mask = get_neighbours_3(im, i, j)
             result[i][j] = sp.hmean(mask, axis=None)
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def get_counterharmonic_mean(im, q, plot):
+def get_counterharmonic_mean(im, q):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -272,15 +235,11 @@ def get_counterharmonic_mean(im, q, plot):
 
             try: result[i][j] = num // den
             except: result[i][j] = 0
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def get_laplacian (im, plot):
+def get_laplacian (im):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -299,15 +258,11 @@ def get_laplacian (im, plot):
                            (mask[2][0] * (-1)) +\
                            (mask[2][1] * (-1)) +\
                            (mask[2][2] + (-1))
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def apply_laplacian(im, plot):
+def apply_laplacian(im):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -319,15 +274,11 @@ def apply_laplacian(im, plot):
         for j in range(width):
             aux = im[i][j] - laplacian[i][j]
             result[i][j] = im[i][j] + aux
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def apply_highboost(im, c, plot):
+def apply_highboost(im, c):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -339,15 +290,11 @@ def apply_highboost(im, c, plot):
             mask = get_neighbours_3(im, i, j)
             aux = im[i][j] - floor(np.median(mask))     # change to gaussian blur
             result[i][j] = im[i][j] + (c * aux)
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
 
 
 
-def get_sobel(im, plot):
+def get_sobel(im):
     if isinstance(im, dict):
         im = im.get('im_obj')
 
@@ -379,8 +326,4 @@ def get_sobel(im, plot):
                        mask[2][2] * 1
 
             result[i][j] = np.sqrt((horizontal ** 2) + (vertical ** 2))
-
-    if plot:
-        plt.imshow(result, cmap='gray')
-        plt.show()
     return result
